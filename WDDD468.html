@@ -66,22 +66,23 @@
         /* 问题显示区域 */
         .question-container {
             position: fixed;
-            top: 20%;
+            top: 10%;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
             z-index: 3;
             width: 80%;
+            max-height: 60%;
+            overflow-y: auto; /* 允许滚动 */
         }
 
         .question-text {
             font-size: 24px;
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            margin: 10px 0;
-            transition: all 0.5s ease;
+            margin: 15px 0;
             opacity: 0;
-            animation: fadeIn 0.5s ease forwards;
+            animation: fadeIn 0.5s ease forwards, growText 0.5s ease forwards;
         }
 
         @keyframes fadeIn {
@@ -89,18 +90,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 问题放大效果 */
-        .question-text.active {
-            font-size: 36px;
-            color: #ffcc00;
-            text-shadow: 0 0 20px rgba(255,204,0,0.8);
-            animation: popIn 0.5s ease;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0); }
-            80% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+        @keyframes growText {
+            from { font-size: 24px; }
+            to { font-size: 36px; }
         }
 
         /* 超大杯特效 */
@@ -152,7 +144,7 @@
                 const finalQuestion = document.createElement('div');
                 finalQuestion.className = 'question-text final-question';
                 finalQuestion.textContent = questions[0];
-                questionContainer.innerHTML = '';
+                questionContainer.innerHTML = ''; // 清空其他问题
                 questionContainer.appendChild(finalQuestion);
                 return;
             }
@@ -163,11 +155,6 @@
             questionText.className = 'question-text';
             questionText.textContent = questions[randomIndex];
             questionContainer.appendChild(questionText);
-
-            // 放大字体
-            setTimeout(() => {
-                questionText.classList.add('active');
-            }, 100);
 
             // 如果是最后一个问题，清空其他问题
             if (questions[randomIndex] === "是不是超大杯？") {

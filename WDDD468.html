@@ -1,87 +1,235 @@
+<!--
+	此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=area-stack-gradient
+-->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>动态问题列表</title>
-    <style>
-        /* 金光特效 */
-        @keyframes goldenGlow {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .golden-glow {
-            animation: goldenGlow 1s infinite;
-            color: gold;
-            text-shadow: 0 0 10px gold, 0 0 20px gold, 0 0 30px gold;
-            font-size: 2em;
-            font-weight: bold;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
+  <meta charset="utf-8">
 </head>
-<body>
-    <div id="question-container">
-        <ul id="question-list">
-            <li>总伤怎么样？</li>
-            <li>dps怎么样？</li>
-            <li>dph怎么样？</li>
-            <li>回转怎么样？</li>
-            <li>吃拐率怎么样？</li>
-        </ul>
-        <p id="special-question" class="hidden">是不是超大杯？？？</p>
-    </div>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
 
-    <script>
-        let questionCount = 0;
-        const maxQuestions = 20;
-        const questionList = document.getElementById('question-list');
-        const specialQuestionElement = document.getElementById('special-question');
-        const questionContainer = document.getElementById('question-container');
+  
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  
+  <!-- Uncomment this line if you want to dataTool extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5/dist/extension/dataTool.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use gl extension
+  <script type="text/javascript" src="https://echarts.apache.org/zh/js/vendors/echarts-gl@2/dist/echarts-gl.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-stat extension
+  <script type="text/javascript" src="https://echarts.apache.org/zh/js/vendors/echarts-stat@latest/dist/ecStat.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-graph-modularity extension
+  <script type="text/javascript" src="https://echarts.apache.org/zh/js/vendors/echarts-graph-modularity/dist/echarts-graph-modularity.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use map
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
+  -->
+  <!-- Uncomment these two lines if you want to use bmap extension
+  <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=YOUR_API_KEY"></script>
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5/dist/extension/bmap.min.js"></script>
+  -->
 
-        // 读取初始问题列表
-        const initialQuestions = Array.from(questionList.getElementsByTagName('li')).map(li => li.textContent);
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
 
-        function showNextQuestion() {
-            if (questionCount < maxQuestions) {
-                // 显示下一个问题
-                const questions = questionList.getElementsByTagName('li');
-                if (questions.length > 0) {
-                    const currentQuestion = questions[0].textContent;
-                    console.log(`当前问题：${currentQuestion}`);
-                    // 将第一个问题移到列表末尾
-                    questionList.appendChild(questions[0]);
-                }
-                questionCount++;
-            } else {
-                // 清空问题列表
-                questionList.innerHTML = '';
-                // 显示特殊词条
-                specialQuestionElement.classList.remove('hidden');
-                specialQuestionElement.classList.add('golden-glow');
-                // 重置计数器
-                questionCount = 0;
-                // 延迟一段时间后隐藏特殊词条并恢复问题列表
-                setTimeout(() => {
-                    specialQuestionElement.classList.add('hidden');
-                    specialQuestionElement.classList.remove('golden-glow');
-                    // 恢复问题列表
-                    initialQuestions.forEach(question => {
-                        const li = document.createElement('li');
-                        li.textContent = question;
-                        questionList.appendChild(li);
-                    });
-                }, 3000); // 3秒后恢复
-            }
-        }
+    option = {
+  color: ['#80FFA5', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
+  title: {
+    text: 'Gradient Stacked Area Chart'
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross',
+      label: {
+        backgroundColor: '#6a7985'
+      }
+    }
+  },
+  legend: {
+    data: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5']
+  },
+  toolbox: {
+    feature: {
+      saveAsImage: {}
+    }
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    containLabel: true
+  },
+  xAxis: [
+    {
+      type: 'category',
+      boundaryGap: false,
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value'
+    }
+  ],
+  series: [
+    {
+      name: 'Line 1',
+      type: 'line',
+      stack: 'Total',
+      smooth: true,
+      lineStyle: {
+        width: 0
+      },
+      showSymbol: false,
+      areaStyle: {
+        opacity: 0.8,
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgb(128, 255, 165)'
+          },
+          {
+            offset: 1,
+            color: 'rgb(1, 191, 236)'
+          }
+        ])
+      },
+      emphasis: {
+        focus: 'series'
+      },
+      data: [140, 232, 101, 264, 90, 340, 250]
+    },
+    {
+      name: 'Line 2',
+      type: 'line',
+      stack: 'Total',
+      smooth: true,
+      lineStyle: {
+        width: 0
+      },
+      showSymbol: false,
+      areaStyle: {
+        opacity: 0.8,
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgb(0, 221, 255)'
+          },
+          {
+            offset: 1,
+            color: 'rgb(77, 119, 255)'
+          }
+        ])
+      },
+      emphasis: {
+        focus: 'series'
+      },
+      data: [120, 282, 111, 234, 220, 340, 310]
+    },
+    {
+      name: 'Line 3',
+      type: 'line',
+      stack: 'Total',
+      smooth: true,
+      lineStyle: {
+        width: 0
+      },
+      showSymbol: false,
+      areaStyle: {
+        opacity: 0.8,
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgb(55, 162, 255)'
+          },
+          {
+            offset: 1,
+            color: 'rgb(116, 21, 219)'
+          }
+        ])
+      },
+      emphasis: {
+        focus: 'series'
+      },
+      data: [320, 132, 201, 334, 190, 130, 220]
+    },
+    {
+      name: 'Line 4',
+      type: 'line',
+      stack: 'Total',
+      smooth: true,
+      lineStyle: {
+        width: 0
+      },
+      showSymbol: false,
+      areaStyle: {
+        opacity: 0.8,
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgb(255, 0, 135)'
+          },
+          {
+            offset: 1,
+            color: 'rgb(135, 0, 157)'
+          }
+        ])
+      },
+      emphasis: {
+        focus: 'series'
+      },
+      data: [220, 402, 231, 134, 190, 230, 120]
+    },
+    {
+      name: 'Line 5',
+      type: 'line',
+      stack: 'Total',
+      smooth: true,
+      lineStyle: {
+        width: 0
+      },
+      showSymbol: false,
+      label: {
+        show: true,
+        position: 'top'
+      },
+      areaStyle: {
+        opacity: 0.8,
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgb(255, 191, 0)'
+          },
+          {
+            offset: 1,
+            color: 'rgb(224, 62, 76)'
+          }
+        ])
+      },
+      emphasis: {
+        focus: 'series'
+      },
+      data: [220, 302, 181, 234, 210, 290, 150]
+    }
+  ]
+};
 
-        // 模拟问题出现的间隔
-        setInterval(showNextQuestion, 1000); // 每1秒切换一次问题
-    </script>
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
 </body>
 </html>
